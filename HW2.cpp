@@ -97,7 +97,6 @@ int main(int argc, char* argv[]) {
   FloatBits bound_bits(loop_bound);
   FloatBits counter_bits(loop_counter);
 
-  // 🔥 Colored output
   std::cout << "\nLoop bound:   " << bound_bits.FormatBitsColored() << "\n";
   std::cout << "Loop counter: " << counter_bits.FormatBitsColored() << "\n\n";
 
@@ -105,7 +104,7 @@ int main(int argc, char* argv[]) {
   FloatBits threshold_bits(threshold);
 
   if (loop_bound >= threshold) {
-    std::cout << "\033[33mWarning: Possible overflow!\033[0m\n"; // yellow
+    std::cout << "\033[33mWarning: Possible overflow!\033[0m\n"; 
     std::cout << "Overflow threshold:\n\t";
     std::cout << threshold << "\n\t";
     
