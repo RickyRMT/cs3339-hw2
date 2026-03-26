@@ -38,3 +38,7 @@ Example:
 ```bash
 ./fp_overflow_checker 1e+08 1.0
 ```
+
+
+example I/O:
+<img width="643" height="245" alt="Screenshot 2026-03-26 at 5 48 25 PM" src="https://github.com/user-attachments/assets/ec7dd1b6-1211-45bd-b026-a5e9d4edd525" />
