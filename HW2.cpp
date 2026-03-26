@@ -22,7 +22,9 @@ class FloatBits {
 
   uint32_t GetFraction() const { return raw_bits_ & 0x7FFFFF; }
 
-  int GetUnbiasedExponent() const { return static_cast<int>(GetExponent()) - 127; }
+  int GetUnbiasedExponent() const {
+    return static_cast<int>(GetExponent()) - 127;
+  }
 
   bool IsExactPowerOfTwo() const {
     return GetExponent() != 0 && GetFraction() == 0;
@@ -35,6 +37,17 @@ class FloatBits {
     return bit_string.substr(0, 1) + " " +
            bit_string.substr(1, 8) + " " +
            bit_string.substr(9, 23);
+  }
+
+  std::string FormatBitsColored() const {
+    std::bitset<32> bits(raw_bits_);
+    std::string bit_string = bits.to_string();
+
+    std::string sign = "\033[36m" + bit_string.substr(0, 1) + "\033[0m";      // cyan
+    std::string exponent = "\033[31m" + bit_string.substr(1, 8) + "\033[0m";  // red
+    std::string fraction = "\033[32m" + bit_string.substr(9, 23) + "\033[0m"; // green
+
+    return sign + " " + exponent + " " + fraction;
   }
 
  private:
@@ -61,11 +74,6 @@ float ComputeOverflowThreshold(float loop_counter) {
   uint32_t exponent = counter_bits.GetExponent();
   uint32_t fraction = counter_bits.GetFraction();
 
-  // For normalized positive values:
-  // - if loop_counter is an exact power of two, threshold exponent = exponent + 24
-  // - otherwise threshold exponent = exponent + 25
-  //
-  // Threshold is itself a power of two, so fraction = 0 and sign = 0.
   uint32_t threshold_exponent;
   if (fraction == 0) {
     threshold_exponent = exponent + 24;
@@ -89,17 +97,19 @@ int main(int argc, char* argv[]) {
   FloatBits bound_bits(loop_bound);
   FloatBits counter_bits(loop_counter);
 
-  std::cout << "Loop bound:   " << bound_bits.FormatBits() << "\n";
-  std::cout << "Loop counter: " << counter_bits.FormatBits() << "\n\n";
+  // 🔥 Colored output
+  std::cout << "\nLoop bound:   " << bound_bits.FormatBitsColored() << "\n";
+  std::cout << "Loop counter: " << counter_bits.FormatBitsColored() << "\n\n";
 
   float threshold = ComputeOverflowThreshold(loop_counter);
   FloatBits threshold_bits(threshold);
 
   if (loop_bound >= threshold) {
-    std::cout << "Warning: Possible overflow!\n";
-    std::cout << "Overflow threshold:\n";
-    std::cout << threshold << "\n";
-    std::cout << threshold_bits.FormatBits() << "\n";
+    std::cout << "\033[33mWarning: Possible overflow!\033[0m\n"; // yellow
+    std::cout << "Overflow threshold:\n\t";
+    std::cout << threshold << "\n\t";
+    
+    std::cout << threshold_bits.FormatBitsColored() << "\n";
   } else {
     std::cout << "There is no overflow!\n";
   }
